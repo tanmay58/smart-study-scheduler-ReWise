@@ -2,7 +2,8 @@ import axios from "axios";
 
 // Create Axios instance
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: "https://rewise-backend.onrender.com/api",
+
 });
 
 // Request interceptor to attach JWT token
