@@ -12,24 +12,31 @@ const authRoutes = require("./routes/authRoutes");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// 4. Middleware
-app.use(cors());
+// 4. Middleware (ORDER MATTERS)
 app.use(express.json());
 
+app.use(cors({
+  origin: [
+    "https://smart-study-scheduler-re-wise-9slu7sryh.vercel.app",
+    "http://localhost:5173"
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
+}));
+
+// 🔥 IMPORTANT: handle preflight requests
+app.options("*", cors());
+
 // 5. API Routes
-app.use("/api/topics", topicRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/topics", topicRoutes);
 
 // 6. MongoDB Connection
 mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  })
+  .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ MongoDB connected");
-
-    // 🔔 Start cron AFTER DB is ready
     require("./cron/revisionCron");
   })
   .catch((err) => {
@@ -43,5 +50,5 @@ app.get("/", (req, res) => {
 
 // 8. Start Server
 app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
