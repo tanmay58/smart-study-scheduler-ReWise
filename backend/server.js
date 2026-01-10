@@ -20,13 +20,9 @@ app.use(cors({
     "https://smart-study-scheduler-re-wise-9slu7sryh.vercel.app",
     "http://localhost:5173"
   ],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
-
-// 🔥 IMPORTANT: handle preflight requests
-app.options("*", cors());
 
 // 5. API Routes
 app.use("/api/auth", authRoutes);
