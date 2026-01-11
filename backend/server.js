@@ -13,16 +13,22 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // 4. Middleware (ORDER MATTERS)
-app.use(express.json());
+app.use(
+  cors({
+    origin: [
+      "https://smart-study-scheduler-re-wise-9slu7sryh.vercel.app",
+      "http://localhost:5173"
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
+  })
+);
 
-app.use(cors({
-  origin: [
-    "https://smart-study-scheduler-re-wise-9slu7sryh.vercel.app",
-    "http://localhost:5173"
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
+// ✅ VERY IMPORTANT: handle preflight requests
+app.options("*", cors());
+
+app.use(express.json());
 
 // 5. API Routes
 app.use("/api/auth", authRoutes);
