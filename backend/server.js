@@ -5,14 +5,16 @@ const cors = require("cors");
 require("dotenv").config();
 
 // 2. Import Routes
-const topicRoutes = require("./routes/topicRoutes");
 const authRoutes = require("./routes/authRoutes");
+const topicRoutes = require("./routes/topicRoutes");
 
 // 3. App Initialization
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 10000;
 
-// 4. Middleware (ORDER MATTERS)
+// 4. Middleware
+app.use(express.json());
+
 app.use(
   cors({
     origin: [
@@ -25,12 +27,10 @@ app.use(
   })
 );
 
-// ✅ VERY IMPORTANT: handle preflight requests
+// ✅ THIS IS THE ONLY VALID OPTIONS HANDLER
 app.options("*", cors());
 
-app.use(express.json());
-
-// 5. API Routes
+// 5. Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/topics", topicRoutes);
 
@@ -45,9 +45,9 @@ mongoose
     console.error("❌ DB connection failed", err);
   });
 
-// 7. Root Route
+// 7. Health Check
 app.get("/", (req, res) => {
-  res.send("📘 ReWise Server is running");
+  res.send("📘 ReWise Backend Running");
 });
 
 // 8. Start Server
