@@ -28,7 +28,7 @@ app.use(
 );
 
 // ✅ THIS IS THE ONLY VALID OPTIONS HANDLER
-app.options("*", cors());
+//app.options("*", cors());
 
 // 5. Routes
 app.use("/api/auth", authRoutes);
