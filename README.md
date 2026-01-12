@@ -5,12 +5,12 @@ The idea is simple: don’t just study once — revise at the right time so you 
 
 This project was built to understand real-world full-stack development, deployment, and authentication flow.
 
-🔗 Live Project
+ Live Project
 
-👉 Frontend (Live App)
+ Frontend (Live App)
 https://smart-study-scheduler-re-wise-oade.vercel.app
 
-🛠 Tech Stack
+ Tech Stack
 
 Frontend
 
@@ -42,7 +42,7 @@ Backend: Render
 
 Database: MongoDB Atlas
 
-✨ Features
+ Features
 
 User authentication (Signup & Login)
 
@@ -60,7 +60,7 @@ Protected routes (only logged-in users can access data)
 
 Fully deployed and working production setup
 
-🧠 Why I Built This
+ Why I Built This
 
 Many students study topics once and forget them later.
 I wanted to build something that helps with revision timing, not just note-taking.
@@ -77,7 +77,7 @@ Hosting frontend and backend separately
 
 Debugging real-world errors (not tutorial ones)
 
-📂 Project Structure
+ Project Structure
 smart-study-scheduler-ReWise/
 │
 ├── backend/
@@ -96,7 +96,7 @@ smart-study-scheduler-ReWise/
 │
 └── README.md
 
-🔐 Environment Variables
+ Environment Variables
 
 Backend uses the following environment variables:
 
@@ -110,7 +110,7 @@ Frontend uses:
 
 VITE_API_URL=https://<backend-url>/api
 
-🚀 How to Run Locally
+ How to Run Locally
 Backend
 cd backend
 npm install
@@ -121,7 +121,7 @@ cd frontend
 npm install
 npm run dev
 
-📌 Current Status
+ Current Status
 
 ✅ Authentication working
 ✅ Database connected
@@ -138,7 +138,7 @@ Better dashboard analytics
 
 Mobile-friendly UI
 
-🙋‍♂️ Author
+ Author
 
 Tanmay Praabhanjan
 Computer Science Engineer
