@@ -11,6 +11,7 @@ const Home = () => {
   const [upcomingTopics, setUpcomingTopics] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // 📥 Fetch topics on page load
   useEffect(() => {
     const fetchTopics = async () => {
       try {
@@ -40,10 +41,20 @@ const Home = () => {
     fetchTopics();
   }, []);
 
+  // ✅ Mark topic as revised (NO page reload)
   const handleMarkRevised = async (id) => {
     try {
       await api.post(`/topics/revise/${id}`);
-      window.location.reload();
+
+      const revisedTopic = dueTopics.find((t) => t._id === id);
+
+      // Remove from due list
+      setDueTopics((prev) => prev.filter((t) => t._id !== id));
+
+      // Add to upcoming list
+      if (revisedTopic) {
+        setUpcomingTopics((prev) => [...prev, revisedTopic]);
+      }
     } catch (err) {
       alert("Failed to mark revised");
     }
@@ -57,7 +68,7 @@ const Home = () => {
     <div className="min-h-screen bg-blue-100 px-6 py-10">
       <div className="max-w-5xl mx-auto space-y-10">
 
-        {/* WELCOME SECTION */}
+        {/* 👋 WELCOME SECTION */}
         <div>
           <h1 className="text-4xl md:text-5xl font-bold text-blue-900">
             👋 Welcome {user?.username}
@@ -70,7 +81,7 @@ const Home = () => {
           </p>
         </div>
 
-        {/* ADD TOPIC CARD */}
+        {/* ➕ ADD TOPIC CARD */}
         <div
           onClick={() => navigate("/add-topic")}
           className="cursor-pointer bg-white rounded-2xl shadow p-8 hover:shadow-lg transition max-w-md"
@@ -84,7 +95,7 @@ const Home = () => {
           </p>
         </div>
 
-        {/* DUE REVISIONS */}
+        {/* 📌 DUE REVISIONS */}
         <div className="bg-white rounded-2xl shadow p-8">
           <h2 className="text-2xl font-semibold text-red-600 mb-4">
             📌 Due Revisions (Today)
@@ -118,7 +129,7 @@ const Home = () => {
           )}
         </div>
 
-        {/* UPCOMING REVISIONS */}
+        {/* 📅 UPCOMING REVISIONS */}
         <div className="bg-white rounded-2xl shadow p-8">
           <h2 className="text-2xl font-semibold text-blue-600 mb-4">
             📅 Upcoming Revisions
