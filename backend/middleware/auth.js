@@ -12,8 +12,8 @@ module.exports = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // ✅ Always attach user as object
-    req.user = { id: decoded.id };
+    // ✅ Attach Mongo-style user object
+    req.user = { _id: decoded.id };
 
     next();
   } catch (err) {
