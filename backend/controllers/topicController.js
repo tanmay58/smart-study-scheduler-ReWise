@@ -1,14 +1,13 @@
 const Topic = require("../models/Topic");
 
+// Spaced Repetition Schedules
 const spacedRepetitionSchedules = {
   Easy: [2, 4, 7, 15, 30],
   Medium: [1, 3, 7, 14, 30],
-  Difficult: [1, 2, 5, 10, 20, 30]
+  Hard: [1, 2, 5, 10, 20, 30]
 };
 
-// ============================
 // Create Topic
-// ============================
 const createTopic = async (req, res) => {
   try {
     const { title, description, subject, difficulty } = req.body;
@@ -28,10 +27,13 @@ const createTopic = async (req, res) => {
       difficulty,
       user: req.user.id,
       revisionSchedule,
-      nextRevisionDate: revisionSchedule[0]
+      currentRevisionIndex: 0,
+      nextRevisionDate: revisionSchedule[0],
+      status: "Active"
     });
 
     await newTopic.save();
+
     res.status(201).json(newTopic);
   } catch (err) {
     console.error(err);
@@ -39,12 +41,13 @@ const createTopic = async (req, res) => {
   }
 };
 
-// ============================
 // Get User Topics
-// ============================
 const getTopics = async (req, res) => {
   try {
-    const topics = await Topic.find({ user: req.user.id });
+    const topics = await Topic.find({ user: req.user.id }).sort({
+      nextRevisionDate: 1
+    });
+
     res.json(topics);
   } catch (err) {
     console.error(err);
@@ -52,9 +55,7 @@ const getTopics = async (req, res) => {
   }
 };
 
-// ============================
 // Update Topic
-// ============================
 const updateTopic = async (req, res) => {
   try {
     const updated = await Topic.findOneAndUpdate(
@@ -74,9 +75,7 @@ const updateTopic = async (req, res) => {
   }
 };
 
-// ============================
 // Delete Topic
-// ============================
 const deleteTopic = async (req, res) => {
   try {
     const deleted = await Topic.findOneAndDelete({
@@ -95,9 +94,7 @@ const deleteTopic = async (req, res) => {
   }
 };
 
-// ============================
 // Mark Topic as Revised
-// ============================
 const markRevised = async (req, res) => {
   try {
     const topic = await Topic.findOne({
@@ -109,21 +106,29 @@ const markRevised = async (req, res) => {
       return res.status(404).json({ error: "Topic not found" });
     }
 
+    // Prevent re-revising completed topics
+    if (topic.status === "Completed") {
+      return res.status(400).json({
+        error: "Topic already completed"
+      });
+    }
+
+    // Save revision history
     topic.revisionHistory.push({
       date: new Date(),
       note: req.body.note || "Revised"
     });
 
-    if (topic.revisionSchedule.length > 0) {
-      topic.revisionSchedule.shift();
-    }
+    // Move to next revision
+    topic.currentRevisionIndex += 1;
 
-    topic.nextRevisionDate =
-      topic.revisionSchedule.length > 0
-        ? topic.revisionSchedule[0]
-        : null;
-
-    if (!topic.nextRevisionDate) {
+    if (
+      topic.currentRevisionIndex < topic.revisionSchedule.length
+    ) {
+      topic.nextRevisionDate =
+        topic.revisionSchedule[topic.currentRevisionIndex];
+    } else {
+      topic.nextRevisionDate = null;
       topic.status = "Completed";
     }
 
@@ -135,13 +140,13 @@ const markRevised = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to mark revision" });
+    res.status(500).json({
+      error: "Failed to mark revision"
+    });
   }
 };
 
-// ============================
-// EXPORTS (CRITICAL)
-// ============================
+// EXPORTS
 module.exports = {
   createTopic,
   getTopics,
