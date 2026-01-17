@@ -29,31 +29,31 @@ const createTopic = async (req, res) => {
       description,
       subject,
       difficulty,
-      user: req.user.id,
+      user: req.user._id, // ✅ FIX
       revisionSchedule,
       nextRevisionDate: revisionSchedule[0],
-      status: "Pending" // ✅ FIXED
+      status: "Pending"
     });
 
     await newTopic.save();
 
     res.status(201).json(newTopic);
   } catch (err) {
-    console.error("Create Topic Error:", err.message);
-    res.status(500).json({ error: err.message });
+    console.error("Create Topic Error:", err);
+    res.status(500).json({ error: "Topic creation failed" });
   }
 };
 
 // Get Topics
 const getTopics = async (req, res) => {
   try {
-    const topics = await Topic.find({ user: req.user.id }).sort({
+    const topics = await Topic.find({ user: req.user._id }).sort({
       nextRevisionDate: 1
     });
 
     res.json(topics);
   } catch (err) {
-    console.error(err);
+    console.error("Get Topics Error:", err);
     res.status(500).json({ error: "Failed to fetch topics" });
   }
 };
@@ -62,7 +62,7 @@ const getTopics = async (req, res) => {
 const updateTopic = async (req, res) => {
   try {
     const updated = await Topic.findOneAndUpdate(
-      { _id: req.params.id, user: req.user.id },
+      { _id: req.params.id, user: req.user._id }, // ✅ FIX
       req.body,
       { new: true }
     );
@@ -73,6 +73,7 @@ const updateTopic = async (req, res) => {
 
     res.json(updated);
   } catch (err) {
+    console.error("Update Topic Error:", err);
     res.status(500).json({ error: "Update failed" });
   }
 };
@@ -82,7 +83,7 @@ const deleteTopic = async (req, res) => {
   try {
     const deleted = await Topic.findOneAndDelete({
       _id: req.params.id,
-      user: req.user.id
+      user: req.user._id // ✅ FIX
     });
 
     if (!deleted) {
@@ -91,6 +92,7 @@ const deleteTopic = async (req, res) => {
 
     res.json({ message: "Topic deleted successfully" });
   } catch (err) {
+    console.error("Delete Topic Error:", err);
     res.status(500).json({ error: "Delete failed" });
   }
 };
@@ -100,7 +102,7 @@ const markRevised = async (req, res) => {
   try {
     const topic = await Topic.findOne({
       _id: req.params.id,
-      user: req.user.id
+      user: req.user._id // ✅ FIX
     });
 
     if (!topic) {
@@ -131,6 +133,7 @@ const markRevised = async (req, res) => {
 
     res.json({ message: "Revision marked successfully", topic });
   } catch (err) {
+    console.error("Mark Revised Error:", err);
     res.status(500).json({ error: "Failed to mark revision" });
   }
 };
